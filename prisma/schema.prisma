@@ -1,0 +1,10 @@
+// Cliente Prisma para PostgreSQL. Los modelos de persistencia están pendientes.
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}

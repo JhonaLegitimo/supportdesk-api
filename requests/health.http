@@ -1,0 +1,8 @@
+# Ejecutar con una extensión de cliente HTTP.
+@baseUrl = http://127.0.0.1:3002
+
+### Información de la API
+GET {{baseUrl}}/
+
+### Estado del servicio
+GET {{baseUrl}}/health
