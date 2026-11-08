@@ -46,4 +46,9 @@ export class TicketsService {
 
     }
 
+    remove(id: string): void {
+        this.findOne(id)
+        this.tickets = this.tickets.filter(ticket => ticket.id !== id)
+    }
+
 }
