@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import type { Ticket } from './ticket.type';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -37,6 +37,11 @@ export class TicketsService {
   }
 
     update(id: string, input: UpdateTicketDto): Ticket {
+        if (input.title === undefined 
+            && input.description === undefined
+            && input.priority === undefined) {
+            throw new BadRequestException('Envía title o description');
+        }
         const ticket = this.findOne(id)
         ticket.title = input.title ?? ticket.title
         ticket.description = input.description ?? ticket.description

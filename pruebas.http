@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 
 ### Petición 3: Actualizar un ticket (PATCH)
-PATCH http://localhost:3002/tickets/bbef9d6e-c4d3-4641-afaf-c5b677f8f21e HTTP/1.1
+PATCH http://localhost:3002/tickets/cbef9d6e-c4d3-4641-afaf-c5b677f8f21e HTTP/1.1
 Content-Type: application/json
 
 {
