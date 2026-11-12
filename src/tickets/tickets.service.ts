@@ -1,59 +1,49 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import type { Ticket } from './ticket.type';
+import { Prisma } from '../generated/prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 
 @Injectable()
 export class TicketsService {
-    private tickets: Ticket[] = []
+    constructor(private readonly prisma: PrismaService) {}
 
-    findAll() {
-        return this.tickets
+    async findAll() {
+        return this.prisma.tickets.findMany({orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]});
+    }
+    
+    async create(dto: CreateTicketDto){
+        return this.prisma.tickets.create({ data: dto });
     }
 
-    findOne(id: string) {
-        const ticket = this.tickets.find(ticket => ticket.id === id)
+    async findOne(id: string) {
+        const ticket = await this.prisma.tickets.findUnique({ where: { id } });
         if (!ticket) {
             throw new NotFoundException(`Ticket with id ${id} not found`)
         }
         return ticket
     }
 
-
-    create(input: CreateTicketDto): Ticket {
-    const now = new Date().toISOString();
-    const ticket: Ticket = {
-      id: randomUUID(),
-      title: input.title,
-      description: input.description,
-      priority: input.priority ?? "MEDIUM",
-      status: "OPEN",
-      createdAt: now,
-      updatedAt: now,
-    };
-    this.tickets.push(ticket);
-    return ticket;
-  }
-
-    update(id: string, input: UpdateTicketDto): Ticket {
-        if (input.title === undefined 
-            && input.description === undefined
-            && input.priority === undefined) {
+    async update(id: string, dto: UpdateTicketDto) {
+        if (dto.title === undefined 
+            && dto.description === undefined
+            && dto.priority === undefined) {
             throw new BadRequestException('Envía title o description');
         }
-        const ticket = this.findOne(id)
-        ticket.title = input.title ?? ticket.title
-        ticket.description = input.description ?? ticket.description
-        ticket.priority = input.priority ?? ticket.priority
-        ticket.updatedAt = new Date().toISOString()
-        return ticket
+        try {
+            return await this.prisma.tickets.update({ where: { id }, data: dto });
+        } catch (error: unknown) {
+            if (
+                error instanceof Prisma.PrismaClientKnownRequestError &&
+                error.code === 'P2025'
+            ) {
+                throw new NotFoundException('La nota no existe');
+            }
+            throw error;
+        }
 
-    }
-
-    remove(id: string): void {
-        this.findOne(id)
-        this.tickets = this.tickets.filter(ticket => ticket.id !== id)
     }
 
 }

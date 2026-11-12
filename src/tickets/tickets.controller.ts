@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, HttpCode, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, ParseUUIDPipe } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
@@ -26,12 +26,5 @@ export class TicketsController {
   update(@Param('id', new ParseUUIDPipe()) id: string, @Body() ticket: UpdateTicketDto){
     return this.ticketsService.update(id, ticket)
   }
-
-  @Delete(':id')
-  @HttpCode(204)
-  remove(@Param('id', new ParseUUIDPipe()) id: string){
-    return this.ticketsService.remove(id)
-  }
-
 
 }
